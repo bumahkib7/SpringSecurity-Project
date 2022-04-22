@@ -1,4 +1,4 @@
-package com.example.springsecurity;
+package com.example.springsecurity.student;
 
 public class Student {
 	private final Integer studentId;
@@ -18,6 +18,11 @@ public class Student {
 		return studentName;
 	}
 
-
-
+	@Override
+	public String toString() {
+		return "Student{" +
+				"studentId=" + studentId +
+				", studentName='" + studentName + '\'' +
+				'}';
+	}
 }
