@@ -4,7 +4,9 @@ package com.example.springsecurity.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+//import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,11 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static com.example.springsecurity.security.ApplicationUserPermission.COURSE_WRITE;
+//import static com.example.springsecurity.security.ApplicationUserPermission.COURSE_WRITE;
 import static com.example.springsecurity.security.ApplicationUserRole.*;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.core.userdetails.User.builder;
-
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration implements SecurityConfigurationApp {
@@ -33,18 +35,16 @@ public class SecurityConfiguration implements SecurityConfigurationApp {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-				.authorizeHttpRequests((authz) -> {
-							authz
-									.antMatchers("/", "/index", "/css/*", "/js/*")
-									.permitAll()
-									.antMatchers("/management/api/**").hasRole(ADMIN.name())
-									.antMatchers(HttpMethod.DELETE, "/management/api/**").hasAuthority(COURSE_WRITE.name())
-									.antMatchers(HttpMethod.POST, "/management/api/**").hasAuthority(COURSE_WRITE.name())
-									.antMatchers(HttpMethod.PUT, "/management/api/**").hasAuthority(COURSE_WRITE.name())
-									.antMatchers(HttpMethod.GET, "/management/api/**").hasAnyRole(ADMIN.name(), ADMINTRAINEE.name())
-									.anyRequest()
-									.authenticated();
-						}
+				.authorizeHttpRequests((authz) -> authz
+						.antMatchers("/", "/index", "/css/*", "/js/*")
+						.permitAll()
+						.antMatchers("/management/api/**").hasRole(ADMIN.name())
+						/*.antMatchers(HttpMethod.DELETE, "/management/api/**").hasAuthority(COURSE_WRITE.name())
+						.antMatchers(HttpMethod.POST, "/management/api/**").hasAuthority(COURSE_WRITE.name())
+						.antMatchers(HttpMethod.PUT, "/management/api/**").hasAuthority(COURSE_WRITE.name())
+						.antMatchers(HttpMethod.GET, "/management/api/**").hasAnyRole(ADMIN.name(), ADMINTRAINEE.name(), STUDENT.name())*/
+						.anyRequest()
+						.authenticated()
 				)
 				.formLogin(withDefaults())
 				.httpBasic()
@@ -62,14 +62,14 @@ public class SecurityConfiguration implements SecurityConfigurationApp {
 		UserDetails janeDoeUser = builder()
 				.username("Jane")
 				.password(passwordEncoder.encode("password123"))
-				//.roles(STUDENT.name())
+				.roles(STUDENT.name())
 				.authorities(STUDENT.getGrantedAuthorities())
 				.build();
 
 		UserDetails johnDoeUser = builder()
 				.username("john")
 				.password(passwordEncoder.encode("password123"))
-				//.roles(ADMIN.name())
+				.roles(ADMIN.name())
 				.authorities(ADMIN.getGrantedAuthorities())
 				.build();
 
@@ -77,7 +77,7 @@ public class SecurityConfiguration implements SecurityConfigurationApp {
 		UserDetails  tomUser = builder()
 				.username("tom")
 				.password(passwordEncoder.encode("password123"))
-				//.roles(ADMINTRAINEE.name())
+				.roles(ADMINTRAINEE.name())
 				.authorities(ADMINTRAINEE.getGrantedAuthorities())
 				.build();
 
