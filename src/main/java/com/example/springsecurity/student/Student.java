@@ -1,5 +1,6 @@
 package com.example.springsecurity.student;
 
+@SuppressWarnings("ALL")
 public class Student {
 	private final Integer studentId;
 	private final String studentName;

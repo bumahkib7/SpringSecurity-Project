@@ -4,6 +4,7 @@ import jakarta.servlet.*;
 
 import java.io.IOException;
 
+@SuppressWarnings("ALL")
 public class JwtAuthenticationFilter implements Filter {
 
 	@Override
